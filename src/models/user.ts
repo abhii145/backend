@@ -14,6 +14,10 @@ interface IUser extends Document {
 
 const schema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: [true, "Name is required"],
+    },
     email: {
       type: String,
       unique: [true, "Email already exists"],
