@@ -34,9 +34,7 @@ export const getAllProductByCategory = async (req: Request, res: Response) => {
     if (myCache.has("categoriesProducts")) {
       categoriesProducts = JSON.parse(myCache.get("categoriesProducts")!);
     } else {
-      categoriesProducts = await Product.find()
-        .sort({ createdAt: -1 })
-        .limit(5);
+      categoriesProducts = await Product.distinct("category");
       myCache.set("categoriesProducts", JSON.stringify(categoriesProducts));
     }
 
@@ -99,7 +97,7 @@ export const getSingleProduct = async (req: Request, res: Response) => {
 
 export const newProduct = async (req: Request, res: Response) => {
   try {
-    const { title, price, category, stock,description } = req.body;
+    const { title, price, category, stock, description } = req.body;
     const photo = req.file as Express.MulterS3.File;
 
     if (!photo) {
@@ -161,7 +159,7 @@ export const updateProductById = async (req: Request, res: Response) => {
     if (price) product.price = price;
     if (stock) product.stock = stock;
     if (category) product.category = category;
-   if (description) product.description = description;
+    if (description) product.description = description;
 
     await product.save();
     await invalidatesCache({
@@ -215,7 +213,7 @@ export const getAllProducts = async (req: Request, res: Response) => {
     const { search, sort, category, price, description } = req.query;
 
     const page = Number(req.query.page) || 1;
-    const limit = Number(process.env.PRODUCT_PER_PAGE) || 8;
+    const limit = Number(process.env.PRODUCT_PER_PAGE) || 20;
     const skip = limit * (page - 1);
 
     const baseQuery: BaseQuery = {};
@@ -234,9 +232,9 @@ export const getAllProducts = async (req: Request, res: Response) => {
       baseQuery.category = category;
     }
 
-     if (typeof description === "string") {
-       baseQuery.description = description;
-     }
+    if (typeof description === "string") {
+      baseQuery.description = description;
+    }
 
     const productsPromise = Product.find(baseQuery)
       .sort(sort && { price: sort === "asc" ? 1 : -1 })

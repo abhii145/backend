@@ -17,19 +17,25 @@ export const invalidatesCache = async ({
         "latestProducts",
         "categoriesProducts",
         "admin-Products",
-        `singleProduct-${productId}`,
       ];
 
       if (typeof productId === "string") {
         productKeys.push(`singleProduct-${productId}`);
       }
 
-      if (typeof productId === "object") {
-        productId.forEach((key) => {
-          productKeys.push(`singleProduct-${key}`);
+      if (Array.isArray(productId)) {
+        productId.forEach((id) => {
+          productKeys.push(`singleProduct-${id}`);
         });
       }
-      myCache.del(productKeys);
+      productKeys.forEach((key) => {
+        if (myCache.has(key)) {
+          myCache.del(key);
+          console.log(`Cache invalidated: ${key}`);
+        } else {
+          console.log(`Cache key not found: ${key}`);
+        }
+      });
     }
 
     if (order) {
