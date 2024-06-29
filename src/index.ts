@@ -5,6 +5,7 @@ import orderRouter from "./routes/order";
 import paymentRouter from "./routes/payment";
 import productRouter from "./routes/product";
 import dashBoardRouter from "./routes/stats";
+import bodyParser from "body-parser";
 
 import dotenv from "dotenv";
 import NodeCache from "node-cache";
@@ -18,6 +19,8 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5005;
 app.use(express.json());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(cors());

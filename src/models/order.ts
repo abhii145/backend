@@ -41,7 +41,7 @@ const schema = new mongoose.Schema(
     },
     shippingCharges: {
       type: Number,
-      required: true,
+      required: false,
     },
     discount: {
       type: Number,
