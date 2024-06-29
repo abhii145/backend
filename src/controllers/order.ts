@@ -16,20 +16,42 @@ export const newOrder = async (req: Request, res: Response) => {
       total,
     } = req.body;
 
-    if (
-      !shippingInfo ||
-      !orderItems ||
-      !user ||
-      !subtotal ||
-      !tax ||
-      !shippingCharges ||
-      !discount ||
-      !total
-    ) {
+    if (!shippingInfo) {
       return res
         .status(400)
-        .json({ success: false, message: "All fields are required" });
+        .json({ success: false, message: "Shipping information is required" });
     }
+    if (!orderItems) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Order items are required" });
+    }
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User is required" });
+    }
+    if (!subtotal) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Subtotal is required" });
+    }
+    if (!tax) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Tax is required" });
+    }
+    if (!discount) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Discount is required" });
+    }
+    if (!total) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Total is required" });
+    }
+
 
  const order =   await Order.create({
       shippingInfo,
@@ -160,7 +182,7 @@ export const processOrder = async (req: Request, res: Response) => {
 
     return res.status(200).json({
       success: true,
-      message: "Order Processed Successfully",
+      message: ` order ${order.status}`,
     });
   } catch (error) {
     return res

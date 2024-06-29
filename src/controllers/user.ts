@@ -58,16 +58,23 @@ export const deleteUser = async (req: Request, res: Response) => {
 };
 
 export const signup = async (req: Request, res: Response) => {
+
   try {
+    console.log("Request body:", req.body);
     const { name, email, password, confirmPassword, role } = req.body;
 
-    if (!name || !email || !password || !confirmPassword) {
-      return res.status(400).json({ error: "Please provide all fields" });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ error: "Passwords do not match" });
-    }
+ if (!name) {
+   return res.status(400).json({ error: "Please provide a name" });
+ }
+ if (!email) {
+   return res.status(400).json({ error: "Please provide an email" });
+ }
+ if (!password) {
+   return res.status(400).json({ error: "Please provide a password" });
+ }
+ if (!confirmPassword) {
+   return res.status(400).json({ error: "Please confirm your password" });
+ }
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {

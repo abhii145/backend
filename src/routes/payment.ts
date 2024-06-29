@@ -11,7 +11,7 @@ import express from "express";
 const app = express.Router();
 
 
-app.post("/create",adminOnly, createPaymentIntent);
+app.post("/create", createPaymentIntent);
 
 
 
