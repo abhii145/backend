@@ -41,11 +41,6 @@ export const newOrder = async (req: Request, res: Response) => {
         .status(400)
         .json({ success: false, message: "Tax is required" });
     }
-    if (!discount) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Discount is required" });
-    }
     if (!total) {
       return res
         .status(400)
@@ -60,7 +55,7 @@ export const newOrder = async (req: Request, res: Response) => {
       subtotal,
       tax,
       shippingCharges,
-      discount,
+      discount: discount || 0,
       total,
     });
 
@@ -107,14 +102,7 @@ export const myOrders = async (req: Request, res: Response) => {
 
 export const allOrders = async (req: Request, res: Response) => {
   try {
-    let orders = [];
-
-    if (myCache.has("all-orders")) {
-      orders = JSON.parse(myCache.get("all-orders")!);
-    } else {
-      orders = await Order.find().populate("user", "name");
-      myCache.set("all-orders", JSON.stringify(orders));
-    }
+    const orders = await Order.find();
     return res.status(200).json({ success: true, orders });
   } catch (error) {
     return res
@@ -126,18 +114,11 @@ export const allOrders = async (req: Request, res: Response) => {
 export const getSingleOrder = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    let order = [];
-
-    if (myCache.has(`order-${id}`)) {
-      order = JSON.parse(myCache.get(`order-${id}`)!);
-    } else {
-      const order = await Order.findById(id).populate("user", "name");
-      if (!order) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Order not found" });
-      }
-      myCache.set(`order-${id}`, JSON.stringify(order));
+    const order = await Order.findById(id).populate("user", "name");
+    if (!order) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Order not found" });
     }
     return res.status(200).json({ success: true, order });
   } catch (error) {
